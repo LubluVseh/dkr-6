@@ -1,49 +1,85 @@
 ﻿program CircularLinkedList;
 uses crt;
 
-const
-N = 10; //количество элементов в списке
-
 type
-ptr = ^node;
-node = record
-data : integer;
-next : ptr;
-end;
+TCircularArray = array [1..10] of integer;
 
 var
-head, ptr1: ptr;
+arr: TCircularArray;
+head, tail: integer;
 
-procedure FillList; {заполнение списки данными}
+procedure InitList;
 var
 i: integer;
 begin
-for i := 1 to N do
+//инициализация массива всеми нулями
+for i := 1 to 10 do
 begin
-new(ptr1);
-ptr1^.data := i;
-ptr1^.next := head;
-head := ptr1;
+arr[i] := 0;
 end;
+head := 1;
+tail := 0;
 end;
 
-procedure PrintList; {вывод списка на экран}
+procedure AddNode(data: integer);
 begin
-ptr1 := head;
-repeat
-writeln('Element: ', ptr1^.data, ' number: ', ptr1^.next);
-ptr1 := ptr1^.next;
-until(ptr1 = head);
+if ((tail + 1) mod 10 = head) then //проверка на переполнение
+begin
+writeln('Список переполнен');
+exit;
+end;
+arr[tail + 1] := data;
+tail := (tail + 1) mod 10; //циклический индекс
+end;
+
+procedure PrintList;
+var ptr1:integer;
+begin
+if tail >= head then
+begin
+for ptr1:= head to tail do
+begin
+write(ptr1, ':', arr[ptr1], ' -> ');
+end;
+end
+else
+begin
+for ptr1 := head to 10 do
+begin
+write(ptr1, ':', arr[ptr1], ' -> ');
+end;
+for ptr1 := 1 to tail do
+begin
+write(ptr1, ':', arr[ptr1], ' -> ');
+end;
+end;
+writeln();
+end;
+
+procedure RemoveNode;
+begin
+if head > tail then
+writeln('Список пуст')
+else
+head := (head + 1) mod 10;
 end;
 
 begin
 clrscr;
 
-head := nil;
+InitList();
 
-FillList;
+AddNode(1);
+AddNode(2);
+AddNode(3);
+AddNode(4);
+AddNode(5);
+RemoveNode();
+AddNode(6);
+RemoveNode();
+AddNode(7);
 
-PrintList;
+PrintList();
 
-readln;
-end. 
+readln();
+end.
